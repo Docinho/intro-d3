@@ -19,7 +19,7 @@
 
   <style>
     .mychart rect {
-      fill: steelblue;
+      fill: slateblue;
     }
 
     .mychart rect:hover {
@@ -37,6 +37,30 @@
 
     function desenhaBarras(dados) {
       // Preencha aqui.
+
+      d3.csv("dados/boqueirao-por-mes.csv", function(error, data) {
+    data.forEach(function(d) {
+        d.date = parseDate(d.date);
+        d.close = +d.close;
+    });
+
+    // Scale the range of the data
+    x.domain(d3.extent(data, function(d) { return d.date; }));
+    y.domain([0, d3.max(data, function(d) { return d.close; })]);
+
+    // Add the valueline path.
+    svg.append("path")
+        .attr("class", "line")
+        .attr("d", valueline(data));
+
+      svg.selectAll('dot')
+      .data(data)
+      .enter().append("circle")
+      .attr("r", 3.5)
+      .attr("cx", function(d){ return x(d.date); })
+      .attr("cy", function(d) { return y(d.close); });    
+      }
+      //http://bl.ocks.org/d3noob/38744a17f9c0141bcd04
     }
 
     d3.tsv('dados/alphabet.tsv', function(dados) {
