@@ -17,13 +17,17 @@
 
     <style>
       .mychart rect {
-        fill: steelblue;
+        fill: black;
       }
 
       .mychart text {
         fill: white;
         font: 10px sans-serif;
         text-anchor: end;
+      }
+
+      .mychart rect:hover {
+        fill: rebeccapurple;
       }
     </style>
 
@@ -54,9 +58,14 @@
           .enter()
             .append('rect')
               .attr('x', 0) // A função com dois parâmetros pode entrar aqui
-              .attr('y', 0) // e aqui
-              .attr('width', 30)
-              .attr('height', 20);
+              .attr('y',  (dado, posicao) => {
+                d3.scaleLinear()
+                .domain([min(dado), max(dado)])
+                .rangeRound([0, altura])
+              }) // e aqui
+              .attr('width', (dado, i) => dado)
+              //{console.log(dado + " " + i); return dado}
+              .attr('height', );
 
       /* Mais dicas :
        * - As barras ficam mais legíveis se não encostarem umas nas outras. Para isso
