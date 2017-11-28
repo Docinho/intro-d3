@@ -78,13 +78,13 @@
        * As escalas
        */
       var x = d3.scaleBand() // Configure essa escala com domain, range e padding
-                .domain([d3.min(dados, function(d) { return d[0]; }), 
-                  d3.max(dados, function(d){return d[0]; })])
-                .range([0, w]);
+                .domain(dados.map((dado) => dado.letra))
+                .range([0, larguraVis])
+                .padding(.1);
       var y = d3.scaleLinear() // Configure essa escala com domain e range
-                 .domain([d3.min(dados, function(d) { return d[1]; }), 
-                  d3.max(dados, function(d){return d[1]; })])
-                 .range([0, h]);// Lembre que uma escala pode converter de 1..10 -> 100..1
+                 .domain([d3.min(dados, (d, i) => d.valor) - 5, d3.max(dados, (d, i) => d.valor)])
+                 .range([0, alturaVis])
+                 .rangeRound([alturaVis, 0]);// Lembre que uma escala pode converter de 1..10 -> 100..1
 
       // === ATÉ AQUI ===
 
