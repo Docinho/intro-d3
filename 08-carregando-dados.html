@@ -39,7 +39,17 @@
     function desenhaBarras(dados) {
       // Preencha aqui.
       //http://bl.ocks.org/d3noob/38744a17f9c0141bcd04
-    
+      //function reqListener () {
+      //console.log(this.responseText);
+    //};
+   //var req = new XMLHttpRequest();
+    //req.onload = reqListener;
+    //req.open('GET',"08-carregando-dados.html", false);
+    //req.send();
+    //var headers = req.getAllResponseHeaders().toLowerCase();
+    //alert(headers);
+   //console.log(xhr.status);
+    //console.log(xhr.statusText);
 
     d3.csv("dados/boqueirao-por-mes.csv", function(error, data) {
     data.forEach(function(d) {
