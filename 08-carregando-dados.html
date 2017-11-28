@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -9,7 +10,6 @@
 </head>
 
 <body>
-    
   <div class="container">
     <div class="row">
       <h2>Barras com dados findos de uma url</h2>
@@ -20,13 +20,11 @@
 
   <style>
     .mychart rect {
-      fill: slateblue;
+      fill: steelblue;
     }
-
     .mychart rect:hover {
       fill: goldenrod;
     }
-
     .mychart text {
       font: 12px sans-serif;
       text-anchor: left;
@@ -35,55 +33,71 @@
 
   <script type="text/javascript">
     "use strict"
-
     function desenhaBarras(dados) {
-      // Preencha aqui.
-      //http://bl.ocks.org/d3noob/38744a17f9c0141bcd04
-      //function reqListener () {
-      //console.log(this.responseText);
-    //};
-   //var req = new XMLHttpRequest();
-    //req.onload = reqListener;
-    //req.open('GET',"08-carregando-dados.html", false);
-    //req.send();
-    //var headers = req.getAllResponseHeaders().toLowerCase();
-    //alert(headers);
-   //console.log(xhr.status);
-    //console.log(xhr.statusText);
+      // definicoes de altura e largura do svg e da vis dentro
+      var alturaSVG = 400, larguraSVG = 900;
+      var	margin = {top: 10, right: 20, bottom:30, left: 45}, // para descolar a vis das bordas do grafico
+          larguraVis = larguraSVG - margin.left - margin.right,
+          alturaVis = alturaSVG - margin.top - margin.bottom;
 
-    d3.csv("dados/boqueirao-por-mes.csv", function(error, data) {
-    data.forEach(function(d) {
-        d.date = parseDate(d.date);
-        d.close = +d.close;
-    });
+      /*
+       * Prepara onde adicionaremos a visualizacao
+       */
+      var grafico = d3.select('#chart') // cria elemento <svg> com um <g> dentro
+        .append('svg')
+          .attr('width', larguraVis + margin.left + margin.right)
+          .attr('height', alturaVis + margin.top + margin.bottom)
+        .append('g') // para entender o <g> vá em x03-detalhes-svg.html
+          .attr('transform', 'translate(' +  margin.left + ',' + margin.top + ')');
 
-    // Scale the range of the data
-    x.domain(d3.extent(data, function(d) { return d.date; }));
-    y.domain([0, d3.max(data, function(d) { return d.close; })]);
+      // === EDITE DAQUI ===
+      /*
+       * As escalas
+       */
+      var x = d3.scaleBand() // Configure essa escala com domain, range e padding
+                .domain(dados.map((dado) => dado.letra))
+                .range([0, larguraVis])
+                .padding(.1);
+      var y = d3.scaleLinear() // Configure essa escala com domain e range
+                 .domain([0, d3.max(dados, (d, i) => d.valor)])
+                 .range([0, alturaVis])
+                 .rangeRound([alturaVis, 0]);// Lembre que uma escala pode converter de 1..10 -> 100..1
 
-    // Add the valueline path.
-    svg.append("path")
-        .attr("class", "line")
-        .attr("d", valueline(data));
+      // === ATÉ AQUI ===
 
-      svg.selectAll('dot')
-      .data(data)
-      .enter().append("circle")
-      .attr("r", 3.5)
-      .attr("cx", function(d){ return x(d.date); })
-      .attr("cy", function(d) { return y(d.close); });    
-    }  
-    //http://bl.ocks.org/d3noob/38744a17f9c0141bcd04
-  } 
+      /*
+       * As marcas
+       */
+      grafico.selectAll('g')
+              .data(dados)
+              .enter()
+                .append('rect')
+                  .attr('x', d => x(d.letra))   // usando a escala definida acima
+                  .attr('width', x.bandwidth()) // largura da barra via escala
+                  .attr('y', d => y(d.valor))
+                  .attr('height', (d) => alturaVis - y(d.valor)); // de cabeca para baixo
 
+      /*
+       * Os eixos
+       */
+      grafico.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + alturaVis + ")")
+              .call(d3.axisBottom(x)); // magica do d3: gera eixo a partir da escala
+
+      grafico.append('g')
+              .attr('transform', 'translate(0,0)')
+              .call(d3.axisLeft(y))  // gera eixo a partir da escala
+
+      grafico.append("text")
+        .attr("transform", "translate(-30," + (alturaVis + margin.top)/2 + ") rotate(-90)")
+        .text("Frequencia");
+    }
     d3.tsv('dados/alphabet.tsv', function(dados) {
       console.log("provavelmente acontece depois")
       desenhaBarras(dados);
     });
-
     console.log("provavelmente acontece primeiro") // me apague quando entender.
-    
-
     /*
     * Assim como a função d3.tsv, existe a d3.csv e a d3.json
     * Em todas, o primeiro parâmetro é uma URL e o segundo a função que
@@ -91,8 +105,6 @@
     * >>>>> A chamada ao d3.tsv é assíncrona <<<<<<
     */
   </script>
-
-
 </body>
 
 </html>
